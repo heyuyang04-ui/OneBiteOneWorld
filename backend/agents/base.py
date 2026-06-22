@@ -2,6 +2,8 @@ from agents.protocol import AgentEvent, AgentResult, Decision
 from agents.memory import AgentMemory
 from services import ai_client
 
+MAX_REACT_STEPS = 4
+
 
 class BaseAgent:
     role: str = "agent"
@@ -12,56 +14,74 @@ class BaseAgent:
 
     async def run(self, event: AgentEvent) -> AgentResult:
         memory = AgentMemory(event.user_id)
-        perception = await self.perceive(event)
-        decision = await self.reason(perception, memory, event)
-        result = await self.act(decision, event)
-        await self.reflect(result, decision, memory)
-        return AgentResult(
-            data=result,
-            follow_up_events=decision.follow_up_events,
-            notification=decision.notification_content if decision.should_notify_user else None
-        )
-
-    async def perceive(self, event: AgentEvent) -> dict:
-        return {"event_type": event.event_type, "data": event.data}
-
-    async def reason(self, perception: dict, memory: AgentMemory, event: AgentEvent) -> Decision:
         recent = await memory.get_recent(3)
         episodes = await memory.get_episodes(2)
-        feedback = await memory.get_feedback_summary()
 
+        observations = []
+        all_skill_results = {}
+        final_notification = None
+        final_follow_ups = []
+        decision = Decision(reasoning="")
+
+        for step in range(MAX_REACT_STEPS):
+            prompt = self._build_react_prompt(event, recent, episodes, observations)
+            for attempt in range(2):
+                raw = await ai_client.chat(prompt, system=self.system_prompt)
+                decision = Decision.parse(raw)
+                if not decision._parse_failed:
+                    break
+                print(f"[WARN] {self.role} step={step} parse retry {attempt + 1}")
+
+            if decision.should_notify_user:
+                final_notification = decision.notification_content
+            final_follow_ups = decision.follow_up_events
+
+            if not decision.skill_calls:
+                break
+
+            step_results = {}
+            for call in decision.skill_calls:
+                skill_name = call.get("name", "")
+                params = call.get("params", {})
+                if skill_name in self.skills:
+                    result = await self.skills[skill_name](event.user_id, params)
+                    step_results[skill_name] = result
+                    all_skill_results[skill_name] = result
+
+            observations.append({
+                "step": step,
+                "thought": decision.reasoning,
+                "skills_called": list(step_results.keys()),
+                "results": step_results,
+            })
+
+        if decision.reasoning and decision.reasoning != "parse_failed":
+            await memory.add_short_term("reasoning", self.role, decision.reasoning)
+
+        return AgentResult(
+            data=all_skill_results,
+            follow_up_events=final_follow_ups,
+            notification=final_notification,
+        )
+
+    def _build_react_prompt(self, event: AgentEvent, recent, episodes, observations: list) -> str:
         skills_list = list(self.skills.keys())
-        prompt = f"""你是一食万象的{self.role}。基于当前感知和记忆，决定需要执行哪些操作。
+        obs_text = f"\n已执行步骤观察：{observations}" if observations else ""
+        step_hint = "请继续下一步。" if observations else "请决定第一步操作。"
+        return f"""你是一食万象的{self.role}。
 
 当前事件：{event.event_type}
-事件数据：{perception['data']}
+事件数据：{event.data}
 最近记忆：{recent}
 情节记忆：{episodes}
-反馈历史：{feedback}
-可用Skills：{skills_list}
+可用Skills：{skills_list}{obs_text}
 
-请返回JSON：
+{step_hint}任务完成时返回 skill_calls 为空列表。
+返回纯JSON（禁止markdown包裹）：
 {{
-    "reasoning": "你的思考过程",
+    "reasoning": "当前思考",
     "skill_calls": [{{"name": "skill名", "params": {{}}}}],
-    "should_notify_user": true/false,
-    "notification_content": "如果需要通知用户的内容",
-    "follow_up_events": [{{"type": "事件类型", "reason": "触发原因"}}]
+    "should_notify_user": false,
+    "notification_content": "",
+    "follow_up_events": []
 }}"""
-        raw = await ai_client.chat(prompt, system=self.system_prompt)
-        return Decision.parse(raw)
-
-    async def act(self, decision: Decision, event: AgentEvent) -> dict:
-        results = {}
-        for call in decision.skill_calls:
-            skill_name = call.get("name", "")
-            params = call.get("params", {})
-            if skill_name in self.skills:
-                skill_fn = self.skills[skill_name]
-                result = await skill_fn(event.user_id, params)
-                results[skill_name] = result
-        return results
-
-    async def reflect(self, result: dict, decision: Decision, memory: AgentMemory):
-        if decision.reasoning:
-            await memory.add_short_term("reasoning", self.role, decision.reasoning)
