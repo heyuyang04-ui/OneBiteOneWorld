@@ -1,0 +1,68 @@
+:root {
+  --app-max-width: 430px;
+  --app-shell-bg: #050B10;
+  --app-bg: #0B151B;
+  --app-night: #071019;
+  --app-night-2: #10202A;
+  --app-city-blue: #244657;
+  --app-wood: #9A6338;
+  --app-wood-deep: #5C3822;
+  --app-amber: #D9A35F;
+  --app-amber-soft: #F1C987;
+  --app-porcelain: #F4E8D4;
+  --app-smoke: rgba(228, 232, 224, 0.68);
+  --app-surface: rgba(18, 31, 38, 0.76);
+  --app-surface-strong: rgba(31, 49, 58, 0.9);
+  --app-card: #F4E8D4;
+  --app-card-warm: #EFE0C6;
+  --app-text: #F7EBD8;
+  --app-text-dark: #2C2118;
+  --app-muted: #B8AA97;
+  --app-muted-dark: #715E4A;
+  --app-accent: var(--app-amber);
+  --app-accent-2: var(--app-wood);
+  --app-border: rgba(241, 201, 135, 0.18);
+  --app-shadow: 0 18px 42px rgba(2, 8, 12, 0.34);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: var(--app-text);
+  background: var(--app-shell-bg);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background:
+    radial-gradient(circle at 50% -8%, rgba(217, 163, 95, 0.24), transparent 30%),
+    radial-gradient(circle at 88% 22%, rgba(36, 70, 87, 0.38), transparent 34%),
+    linear-gradient(180deg, #050B10 0%, #0B151B 48%, #050B10 100%);
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+}

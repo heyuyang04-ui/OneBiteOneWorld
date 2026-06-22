@@ -1,0 +1,177 @@
+.app-container {
+  width: min(100%, var(--app-max-width));
+  margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background:
+    radial-gradient(circle at 18% 0%, rgba(217, 163, 95, 0.16), transparent 34%),
+    linear-gradient(180deg, var(--app-night) 0%, var(--app-bg) 48%, #0A1217 100%);
+  position: relative;
+  box-shadow: 0 0 56px rgba(0, 0, 0, 0.38);
+}
+
+.app-container::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 50%;
+  width: min(100%, var(--app-max-width));
+  height: 180px;
+  transform: translateX(-50%);
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 80% 26%, rgba(241, 201, 135, 0.12), transparent 28%),
+    linear-gradient(180deg, rgba(36, 70, 87, 0.22), transparent);
+  z-index: 0;
+}
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background:
+    linear-gradient(135deg, rgba(5, 11, 16, 0.96) 0%, rgba(16, 32, 42, 0.96) 58%, rgba(92, 56, 34, 0.94) 100%);
+  color: var(--app-text);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 1px solid var(--app-border);
+  box-shadow: 0 14px 30px rgba(2, 8, 12, 0.42);
+  backdrop-filter: blur(18px);
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-title {
+  font-family: serif;
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--app-porcelain);
+  letter-spacing: 0.04em;
+}
+
+.brand-sub {
+  font-size: 10px;
+  color: var(--app-amber-soft);
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.icon-btn {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  color: rgba(244, 232, 212, 0.82);
+  text-decoration: none;
+  border: 1px solid rgba(241, 201, 135, 0.16);
+  border-radius: 14px;
+  background: rgba(244, 232, 212, 0.06);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  transition: transform 0.18s ease, color 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+
+.icon-btn.active,
+.icon-btn:hover {
+  color: var(--app-amber-soft);
+  border-color: rgba(241, 201, 135, 0.34);
+  background: rgba(217, 163, 95, 0.12);
+  transform: translateY(-1px);
+}
+
+.notification-badge {
+  position: absolute;
+  top: -5px;
+  right: -6px;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #E75F4D, #C93E32);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  box-shadow: 0 6px 14px rgba(201, 62, 50, 0.36);
+}
+
+.app-main {
+  flex: 1;
+  padding: 16px;
+  padding-bottom: 80px;
+  overflow-y: auto;
+  background:
+    radial-gradient(circle at 12% 0%, rgba(217, 163, 95, 0.14), transparent 26%),
+    linear-gradient(180deg, rgba(11, 21, 27, 0.96) 0%, rgba(14, 26, 32, 0.98) 190px, #122029 100%);
+  position: relative;
+  z-index: 1;
+}
+
+.tab-bar {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(100%, var(--app-max-width));
+  display: flex;
+  justify-content: space-around;
+  background: rgba(5, 11, 16, 0.94);
+  border-top: 1px solid rgba(241, 201, 135, 0.2);
+  padding: 8px 0;
+  padding-bottom: calc(8px + env(safe-area-inset-bottom));
+  z-index: 100;
+  backdrop-filter: blur(18px);
+  box-shadow: 0 -14px 32px rgba(2, 8, 12, 0.42);
+}
+
+.tab-item {
+  min-width: 56px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: rgba(244, 232, 212, 0.56);
+  font-size: 12px;
+  gap: 4px;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.tab-item.active {
+  color: var(--app-amber-soft);
+  transform: translateY(-2px);
+}
+
+.tab-icon {
+  width: 34px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.tab-item.active .tab-icon {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(241, 201, 135, 0.32), transparent 70%),
+    rgba(217, 163, 95, 0.12);
+  box-shadow: 0 8px 20px rgba(217, 163, 95, 0.16);
+}
+
+.tab-label {
+  font-size: 10px;
+  letter-spacing: 0.03em;
+}

@@ -1,0 +1,106 @@
+.taste-loading-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  box-sizing: border-box;
+  color: var(--app-porcelain);
+  background:
+    radial-gradient(circle at 50% 20%, rgba(241, 201, 135, 0.18), transparent 34%),
+    radial-gradient(circle at 18% 72%, rgba(36, 70, 87, 0.24), transparent 30%),
+    linear-gradient(180deg, var(--app-night), var(--app-night-soft));
+}
+
+.taste-loading-card {
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  padding: 24px 26px;
+  border: 1px solid rgba(241, 201, 135, 0.18);
+  border-radius: 28px;
+  background: rgba(18, 31, 38, 0.62);
+  box-shadow: 0 22px 54px rgba(2, 8, 12, 0.38);
+  backdrop-filter: blur(18px);
+}
+
+.taste-loading-card p {
+  margin: 0;
+  color: rgba(244, 232, 212, 0.86);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.taste-loading-orbit {
+  width: 58px;
+  height: 58px;
+  position: relative;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle, rgba(241, 201, 135, 0.28), transparent 58%),
+    rgba(244, 232, 212, 0.05);
+  box-shadow: 0 0 34px rgba(217, 163, 95, 0.18);
+}
+
+.taste-loading-orbit::before {
+  content: '';
+  position: absolute;
+  inset: 7px;
+  border-radius: 999px;
+  border: 1px solid rgba(241, 201, 135, 0.28);
+  animation: taste-orbit-pulse 1.8s ease-in-out infinite;
+}
+
+.taste-loading-orbit span {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--app-amber-soft);
+  box-shadow: 0 0 16px rgba(241, 201, 135, 0.54);
+  animation: taste-signal-dot 1.3s ease-in-out infinite;
+}
+
+.taste-loading-orbit span:nth-child(1) {
+  transform: translate(-16px, 7px);
+}
+
+.taste-loading-orbit span:nth-child(2) {
+  transform: translate(0, -14px);
+  animation-delay: 0.16s;
+}
+
+.taste-loading-orbit span:nth-child(3) {
+  transform: translate(16px, 7px);
+  animation-delay: 0.32s;
+}
+
+@keyframes taste-orbit-pulse {
+  0%, 100% { transform: scale(0.92); opacity: 0.52; }
+  50% { transform: scale(1.08); opacity: 1; }
+}
+
+@keyframes taste-signal-dot {
+  0%, 100% { opacity: 0.38; }
+  50% { opacity: 1; }
+}
+
+.session-expired-banner {
+  position: fixed;
+  top: 14px;
+  left: 50%;
+  z-index: 9999;
+  width: min(calc(100% - 32px), 360px);
+  transform: translateX(-50%);
+  border: 1px solid rgba(241, 201, 135, 0.3);
+  border-radius: 999px;
+  padding: 10px 14px;
+  background: rgba(5, 11, 16, 0.94);
+  color: var(--app-porcelain);
+  box-shadow: 0 12px 32px rgba(2, 8, 12, 0.42);
+  text-align: center;
+  font-size: 13px;
+  font-weight: 800;
+}
