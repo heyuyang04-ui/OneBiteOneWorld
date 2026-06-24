@@ -22,15 +22,25 @@ class BaseAgent:
         final_notification = None
         final_follow_ups = []
         decision = Decision(reasoning="")
+        usage = {}
 
         for step in range(MAX_REACT_STEPS):
+            # 每步开始前检查上下文占用，超50%压缩记忆
+            if step > 0 and usage.get("context_ratio", 0) >= 0.5:
+                print(f"[Token] {self.role} step={step} context={usage['context_ratio']:.1%} → compressing memory")
+                await memory.maybe_compress(usage["context_ratio"])
+                recent = await memory.get_recent(3)  # 刷新压缩后的记忆
+
             prompt = self._build_react_prompt(event, recent, episodes, observations)
             for attempt in range(2):
-                raw = await ai_client.chat(prompt, system=self.system_prompt)
+                raw, usage = await ai_client.chat_with_usage(prompt, system=self.system_prompt)
                 decision = Decision.parse(raw)
                 if not decision._parse_failed:
                     break
                 print(f"[WARN] {self.role} step={step} parse retry {attempt + 1}")
+
+            if usage.get("context_ratio", 0) > 0:
+                print(f"[Token] {self.role} step={step} context={usage['context_ratio']:.1%} ({usage.get('prompt_tokens', 0)}/{ai_client.context_window})")
 
             if decision.should_notify_user:
                 final_notification = decision.notification_content
